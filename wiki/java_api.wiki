@@ -1,5 +1,4 @@
-#summary Java API
-=Java API=
+#summary This document explains how to integrate Kahlua in your java project
 
 This document describes what things to consider when using Kahlua inside your java application
 

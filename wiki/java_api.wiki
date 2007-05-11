@@ -1,3 +1,4 @@
+#summary Java API
 =Java API=
 
 This document describes what things to consider when using Kahlua inside your java application

@@ -1,4 +1,4 @@
-=Lua API=
+#summary This document lists the functions that are available to the lua environment per default in Kahlua
 
 Here is a complete list of what functions are available to the lua environment.
 If nothing else is specified, they exhibit the same semantics as their lua counterpart.

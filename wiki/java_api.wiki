@@ -21,10 +21,9 @@ Use null as metatable to unset.
 
 ==Differences compared to standard Lua==
 
-All metatable keys except for __gc and __mode are supported.
+All metatable keys except for __gc are supported.
 __gc is unsupported because CLDC 1.1 doesn't have a way to report when an
-object gets garbage collected.
-Since Java handles garbage collection, weak tables also become a problem.
+object gets garbage collected. Weak tables are implemented in the latest SVN. Kahlua requires that the __mode entry be present once the metatable gets set. On this event, all keys and/or values will be made weak/un-weak references, depending on the __mode setting.
 
 ==Strings==
 Kahlua assumes the equality is identity for strings:

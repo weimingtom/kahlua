@@ -42,6 +42,8 @@ string.byte
 string.sub
 string.lower
 string.upper
+string.find (incomplete)
+string.match (incomplete)
 math.*
 }}}
 
@@ -75,11 +77,11 @@ package.*
 coroutine.*
 
 string.dump
-string.find
+string.find (not complete)
 string.format
 string.gmatch
 string.gsub
-string.match
+string.match (not complete)
 string.reverse
 
 table.concat

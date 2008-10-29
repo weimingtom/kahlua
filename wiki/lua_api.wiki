@@ -90,6 +90,9 @@ string.gmatch
 string.gsub
 string.match (not complete)
 
+table.concat
+table.sort
+
 os.clock
 os.execute
 os.exit
@@ -99,10 +102,6 @@ os.rename
 os.setlocale
 os.tmpname
 
-table.concat
-table.sort
-
 io.*
-os.*
 debug.*
 }}}

@@ -37,6 +37,7 @@ setmetatable
 tostring
 tonumber
 print
+
 string.char
 string.byte
 string.sub
@@ -44,6 +45,12 @@ string.lower
 string.upper
 string.find (incomplete)
 string.match (incomplete)
+string.reverse
+
+os.time
+os.datediff
+os.date (incomplete)
+
 math.*
 }}}
 
@@ -82,7 +89,15 @@ string.format
 string.gmatch
 string.gsub
 string.match (not complete)
-string.reverse
+
+os.clock
+os.execute
+os.exit
+os.getenv
+os.remove
+os.rename
+os.setlocale
+os.tmpname
 
 table.concat
 table.sort

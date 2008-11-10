@@ -45,7 +45,7 @@ string.sub
 string.lower
 string.upper
 string.reverse
-string.find (not complete, doesn't support captures yet).
+string.find (not complete, does not support captures yet).
 string.match (not complete, same as find)
 
 os.time

@@ -38,14 +38,15 @@ tostring
 tonumber
 print
 
-string.char
 string.byte
+string.char
+string.format
 string.sub
 string.lower
 string.upper
-string.find (incomplete)
-string.match (incomplete)
 string.reverse
+string.find (not complete, doesn't support captures yet).
+string.match (not complete, same as find)
 
 os.time
        supports every table entry except for isdst
@@ -85,11 +86,8 @@ package.*
 coroutine.*
 
 string.dump
-string.find (not complete)
-string.format
 string.gmatch
 string.gsub
-string.match (not complete)
 
 table.concat
 table.sort

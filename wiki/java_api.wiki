@@ -49,5 +49,9 @@ Use luac -o output.lbc input.lua to compile a lua source file to bytecode.
 You can then use LuaPrototype.loadBytecode to get a lua closure.
 See se.krka.kahlua.test.Test to see examples of usage
 
+if you want to use the standard library functions that are implemented in lua,
+you need to compile it yourself with luac and add that to your project.  stdlib.lua
+is found in the testsuite/lua directory alongside other lua testcases.
+
 ==Supported Lua versions==
 Kahlua only supports Lua 5.1 bytecode, without any of the 5.0 compat options.

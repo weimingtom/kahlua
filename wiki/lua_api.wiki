@@ -37,6 +37,7 @@ setmetatable
 tostring
 tonumber
 print
+collectgarbage
 
 string.byte
 string.char
@@ -72,7 +73,6 @@ table.setn
 
 ==Not implemented==
 {{{
-collectgarbage
 dofile
 load
 loadfile

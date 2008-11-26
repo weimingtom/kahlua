@@ -55,6 +55,11 @@ os.datediff
 os.date (incomplete)
 
 math.*
+coroutine.create
+coroutine.resume
+coroutine.yield
+coroutine.status
+coroutine.running
 }}}
 
 ==Implemented in Lua==
@@ -69,6 +74,7 @@ table.remove
 table.maxn
 table.getn
 table.setn
+coroutine.wrap
 }}}
 
 ==Not implemented==
@@ -82,8 +88,6 @@ xpcall
 module
 require
 package.*
-
-coroutine.*
 
 string.dump
 string.gmatch

@@ -43,9 +43,7 @@ public final class StringLib implements JavaFunction {
 	private static final int MAXCAPTURES = 32;
 	private static final String SPECIALS = "^$*+?.([%-";
 	private static final String HEXCHARS = "0123456789abcdefABCDEF";
-	
-	private static final int MINCAPLOC = 0;
-	
+		
 	private static final String[] names;
 	
 	// NOTE: String.class won't work in J2ME - so this is used as a workaround
@@ -357,18 +355,17 @@ public final class StringLib implements JavaFunction {
 			}
 			do {
 				int[][] captures = createCaptures();
-				int level = match(captures, source, pattern, sIndex, pIndex);
-				if (level > -1) {
+				int[] matchresult = match(captures, source, pattern, sIndex, pIndex);
+				if (matchresult != null) {
 					if (find) {
-						int[] indices = captures[MAXCAPTURES];
-						// shift base right by 2, add the 2 later
-						return callFrame.push(new Double(indices[0]+1), new Double(indices[1])) + 
-							pushCaptures(callFrame, source, captures, level, false);
+						return callFrame.push(new Double(matchresult[0]+1), new Double(matchresult[1])) + 
+							pushCaptures(callFrame, source, captures);
 					} else {
-						boolean maincap = true;
-						if (level > 1) // don't push the main match if there are captures in the pattern.
-							maincap = false;
-						return pushCaptures(callFrame, source, captures, level, maincap);
+						if (captureLevel(captures) == 0) {
+							// if there are no captures, just push the match result.
+							return pushCapture(callFrame, source, matchresult[0], matchresult[1]);
+						}
+						return pushCaptures(callFrame, source, captures);
 					}
 				}
 				sIndex++;
@@ -425,7 +422,7 @@ public final class StringLib implements JavaFunction {
 		return sig ? -1 : p.indexOf(']', index)+1;
 	}
 
-	private int singleMatch(char sc, String pattern,  int pIndex) {
+	private int singleMatch(char sc, String pattern,  int pIndex, int ep) {
 		char pc = pattern.charAt(pIndex);
 		switch (pc) {
 			case '.': return pIndex + 1;
@@ -435,14 +432,13 @@ public final class StringLib implements JavaFunction {
 				} else {
 					return -1;
 				}
-			case '[': return matchBracketClass(sc, pattern, pIndex+1);
+			case '[': return matchBracketClass(sc, pattern, ep-1);
 			
 			default: return (pc == sc) ? (pIndex + 1) : -1;
 		}
 	}
-	
-	private int match(int[][] captures, String source,
-			String pattern, int sIndex, int pIndex) {
+			
+	private int[] match(int[][] captures, String source, String pattern, int sIndex, int pIndex) {
 		int level = 0;
 		int si = sIndex;
 		int caplevel = 0;
@@ -477,83 +473,100 @@ public final class StringLib implements JavaFunction {
 				} // don't break here since we want to check the $ normally too.
 		    default:
 		    	if (si >= source.length())
-		    		return -1;
+		    		return null;
 		    
-		    	int pi = classend(pattern,pIndex);
-		    	//boolean m = si < source.length() && singleMatch(source.charAt(si), pattern, pi) > -1;
-				//TODO: accumulators (*,+,-,?)
-				if (pi < pattern.length()) {
-					switch (pattern.charAt(pi)) {
+		    	int ep = classend(pattern,pIndex);
+ 		    	if (ep < pattern.length()) {
+		    		boolean initmatch = si < source.length() && singleMatch(source.charAt(si), pattern, pIndex, ep) > -1;
+		    		//TODO: accumulators (*,+,-,?)
+		    		int[] result;
+					switch (pattern.charAt(ep)) {
 					case '?':
-					case '*':
-					case '+':
-					case '-':
-					default:
-						pIndex = singleMatch(source.charAt(si), pattern, pIndex);
 						break;
+					case '*':
+						result = matchMost(captures,source,si,pattern,pIndex,ep);
+						if (result == null) {
+							return null;
+						} else {
+							si = result[1];
+							pIndex = ep+1;
+						}
+						break;
+					case '+':
+						break;
+					case '-':
+						result = matchLeast(captures,source,si,pattern,pIndex,ep);
+						if (result == null) {
+							return null;
+						} else {
+							si = result[1];
+							pIndex = ep+1;
+						}
+						break;
+					default:
+						if (!initmatch || pIndex < 0)
+							return null;
+						si++;
+						pIndex = ep;
+						continue;
 					}
-				} else {
-					pIndex = singleMatch(source.charAt(si), pattern, pIndex);
 				}
-				
-				if (pIndex < 0) 
-					return -1;
-				
-				si++;
-		    	break;
 			}
 		}
+		BaseLib.luaAssert(caplevel == 0, "unfinished capture");
 		// if the pattern isn't finished when the loop finishes, the pattern doesn't match or
-		// if there are any open captures, don't match.
-		if (pIndex < pattern.length() || caplevel > 0) 
-			return -1; 
-		// store the full match for find and if we didnt have any other captures.
-		captures[MAXCAPTURES][0] = sIndex; 
-		captures[MAXCAPTURES][1] = si;
-		return level;
-	}
-	
-	private int matchOptional(String source, int si, String pattern,
-			int pIndex, boolean m) {
+		if (pIndex < pattern.length()) 
+			return null; 
 		
-		return pIndex;
-	}
-
-	private int minExpand (int[][] captures, String source, int s,
-            String pattern, int ep) {
-		for (;;) {
-		    int res = match(captures, source, pattern, s, ep+1);
-		    if (res != -1)
-		    	return res;
-		    else if (s<source.length() && singleMatch(source.charAt(s), pattern, ep) > -1)
-		    	s++;  // try with one more repetition
-		    else 
-		    	return -1;
-		}
+		return new int[] {sIndex, si};
 	}
 	
-	private int classend(String pattern, int pIndex) {
-		switch (pattern.charAt(pIndex)) {
-	    case '%': 
-	    	pIndex++;
-	        BaseLib.luaAssert(pIndex < pattern.length(), "malformed pattern (ends with %)");
-	        return pIndex+1;
-	    case '[': 
-	    	pIndex++;
-	    	if (pattern.charAt(pIndex) == '^') pIndex++;
-	    	do {  // look for a `]' 
-	    		BaseLib.luaAssert(pIndex < pattern.length(), "malformed pattern (missing ])");
-	    		if (pattern.charAt(pIndex++) == '%' && pIndex != pattern.length())
-	    			pIndex++;  // skip escapes (e.g. `%]') 
-	    	} while (pattern.charAt(pIndex) != ']');
-	    	return pIndex+1;
-	    default: 
-	    	return pIndex;
+	private int[] matchMost (int[][] captures, String source, int s, String pattern, int p, int ep) {
+		int i = 0;  // counts maximum expand for item 
+		while ((s+i)<source.length() && singleMatch(source.charAt(s+i), pattern, p, ep) > -1)
+			i++;
+		// keeps trying to match with the maximum repetitions 
+		while (i>=0) {
+			int[] res = match(captures, source, pattern, s+i, ep);
+			if (res != null) 
+				return res;
+			i--;  // else didn't match; reduce 1 repetition to try again
 		}
+		return null;
+	}
+	
+	private int[] matchLeast (int[][] captures, String source, int s, String pattern, int p, int ep) {
+	  for (;;) {
+	    int[] res = match(captures, source, pattern, s, ep+1);
+	    if (res != null)
+	      return res;
+	    else if (s<source.length() && singleMatch(source.charAt(s), pattern, p, ep) > -1)
+	      s++;  // try with one more repetition
+	    else return null;
+	  }
+	}
+		
+	private int classend(String pattern, int pIndex) {
+		pIndex++;
+		if (pIndex < pattern.length()){
+			if (pattern.charAt(pIndex) == '%') {
+				BaseLib.luaAssert(pIndex < pattern.length(), "malformed pattern (ends with %)");
+				return pIndex+1;
+			} else if (pattern.charAt(pIndex) == '[') {
+				if (pattern.charAt(pIndex) == '^') pIndex++;
+				do {  // look for a `]' 
+					BaseLib.luaAssert(pIndex < pattern.length(), "malformed pattern (missing ])");
+					if (pattern.charAt(pIndex++) == '%' && pIndex != pattern.length())
+						pIndex++;  // skip escapes (e.g. `%]') 
+				} while (pattern.charAt(pIndex) != ']');
+				return pIndex+1;
+			}
+		}
+		return pIndex;
 	}
 		
 	private int[][] createCaptures() {
-		int[][] result = new int[MAXCAPTURES + 1][2];// +1 for the initial search
+		int[][] result = new int[MAXCAPTURES][2];
 		for (int i = 0; i < result.length; i++) {
 			result[i][0] = 0;
 			result[i][1] = -1;
@@ -564,7 +577,7 @@ public final class StringLib implements JavaFunction {
 	private int captureToClose (int[][] captures, int level) {
 		// if there are captures that are started but not finished, find the latest one
 		int[] capture;
-		for (int i = level; i >= MINCAPLOC; i--) {
+		for (int i = level; i >= 0; i--) {
 			capture = captures[i];
 			if (capture[0] != 0 && capture[1] == -1)
 				return i;
@@ -572,19 +585,21 @@ public final class StringLib implements JavaFunction {
 		return level;
 	}
 	
-	private int pushCaptures(LuaCallFrame callFrame, String source, int[][] caps, 
-			int level, boolean maincap) {
+	private int captureLevel(int[][] captures) {
+		for (int i = 0; i < captures.length; i++) {
+			if (captures[i][0] == 0 && captures[i][1] == -1) {
+				return i;
+			}
+		}
+		return MAXCAPTURES;
+	}
+	
+	private int pushCaptures(LuaCallFrame callFrame, String source, int[][] caps) {
 		int pushed = 0;
 		int i = 0;
-		for (int j = 0; j <= level; j++) {
+		for (int j = 0; j < caps.length; j++) {
 			int from = caps[i][0];
 			int to = caps[i++][1];
-			pushed += pushCapture(callFrame, source, from, to);
-		}
-		if (maincap) {
-			int from = caps[MAXCAPTURES][0];
-			int to = caps[MAXCAPTURES][1];
-						
 			pushed += pushCapture(callFrame, source, from, to);
 		}
 		return pushed;
@@ -596,7 +611,11 @@ public final class StringLib implements JavaFunction {
 			// location capture
 			return callFrame.push(new Double(from+1));
 		} else if (from < to) {
+			// regular capture
 			return callFrame.push(source.substring(from, to).intern());
+		} else if (from == 1 && to == 0) {
+			// empty string capture
+			return callFrame.push("".intern());
 		}
 		return 0;
 	}

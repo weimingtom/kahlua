@@ -1,4 +1,0 @@
-* add array part of lua table
-* add testing for environments
-* implement a lua compiler
-

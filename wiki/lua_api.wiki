@@ -55,11 +55,14 @@ os.datediff
 os.date (incomplete)
 
 math.*
+
 coroutine.create
 coroutine.resume
 coroutine.yield
 coroutine.status
 coroutine.running
+
+table.concat
 }}}
 
 ==Implemented in Lua==
@@ -93,7 +96,6 @@ string.dump
 string.gmatch
 string.gsub
 
-table.concat
 table.sort
 
 os.clock

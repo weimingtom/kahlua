@@ -77,6 +77,7 @@ table.remove
 table.maxn
 table.getn
 table.setn
+table.sort
 coroutine.wrap
 }}}
 
@@ -95,8 +96,6 @@ package.*
 string.dump
 string.gmatch
 string.gsub
-
-table.sort
 
 os.clock
 os.execute

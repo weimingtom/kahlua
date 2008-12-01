@@ -51,7 +51,7 @@ string.match
 
 os.time
        supports every table entry except for isdst
-os.datediff
+os.difftime
 os.date 
        supports every table entry except for isdst       
 

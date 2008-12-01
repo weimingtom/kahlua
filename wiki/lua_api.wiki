@@ -46,13 +46,14 @@ string.sub
 string.lower
 string.upper
 string.reverse
-string.find (not complete, does not support captures yet).
-string.match (not complete, same as find)
+string.find
+string.match
 
 os.time
        supports every table entry except for isdst
 os.datediff
-os.date (incomplete)
+os.date 
+       supports every table entry except for isdst       
 
 math.*
 

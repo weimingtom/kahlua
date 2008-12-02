@@ -73,6 +73,7 @@ ipairs
 pairs
 string.len
 string.rep
+string.gmatch
 table.insert
 table.remove
 table.maxn
@@ -95,7 +96,6 @@ require
 package.*
 
 string.dump
-string.gmatch
 string.gsub
 
 os.clock

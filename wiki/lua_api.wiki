@@ -48,6 +48,7 @@ string.upper
 string.reverse
 string.find
 string.match
+string.gsub
 
 os.time
        supports every table entry except for isdst
@@ -96,7 +97,6 @@ require
 package.*
 
 string.dump
-string.gsub
 
 os.clock
 os.execute

@@ -178,7 +178,7 @@ There are two available options to set.
 
 ====LuaConstructor====
 LuaConstructor should be applied to all constructors that you want available in Lua.
-`alias` is required, and is the name of the function in Lua that calls the constructor.
+ * `alias` is required, and is the name of the function in Lua that calls the constructor.
 
 ====Desc====
 Desc is an optional annotation that can be applied to methods and parameters.

@@ -104,7 +104,7 @@ Global functions can be exposed both from objects and from classes through stati
 ====Example====
 {{{
 public class SimpleLuaApi {
-	@LuaMethod(alias="SetColor", global=true)
+	@LuaMethod(name="SetColor", global=true)
 	public void setColor(int red, int green, int blue) {
 	}
 }
@@ -142,13 +142,13 @@ obj.method(arg1, arg2, ...)
 public class SimpleLuaClass {
 	private int mycolor;
 	
-	@LuaConstructor(alias="NewSimple")
+	@LuaConstructor(name="NewSimple")
 	@Desc("returns a new SimpleLuaClass object")
 	public SimpleLuaClass(@Desc("range 0-255") int red, @Desc("range 0-255") int green, @Desc("range 0-255") int blue) {
 		mycolor = red + green + blue;
 	}
 
-	@LuaMethod(alias="SetColor", global=false)
+	@LuaMethod(name="SetColor", global=false)
 	public void setColor(@Desc("range 0-255") int red, @Desc("range 0-255") int green, @Desc("range 0-255") int blue) {
 		mycolor = red + green + blue;
 	}
@@ -174,11 +174,11 @@ LuaMethod should be applied to all methods that you want available in Lua.
 There are two available options to set.
 
  * `global` decides if the method should be exposed as a method or a global function. It's optional, and defaults to false, i.e. a method.
- * `alias` sets the name to be used in Lua. It's optional and default is the same as the method name in Java.
+ * `name` sets the name to be used in Lua. It's optional and default is the same as the method name in Java.
 
 ====LuaConstructor====
 LuaConstructor should be applied to all constructors that you want available in Lua.
- * `alias` is required, and is the name of the function in Lua that calls the constructor.
+ * `name` is required, and is the name of the function in Lua which calls the constructor in Java
 
 ====Desc====
 Desc is an optional annotation that can be applied to methods and parameters.
@@ -201,7 +201,7 @@ since constructors always only return one value.
 @LuaClass
 public class SimpleLuaClass {
 	private int red, green, blue;
-	@LuaMethod(alias="GetAndSetColor", global=false)
+	@LuaMethod(name="GetAndSetColor", global=false)
 	public void getColor(ReturnValues returnValues, int red, int green, int blue) {
 		returnValues.push(this.red, this.green, this.blue);
 		this.red = red;

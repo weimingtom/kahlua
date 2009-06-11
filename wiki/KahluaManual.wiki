@@ -1,4 +1,5 @@
 #summary Kahlua Manual
+#labels Featured
 
 =Contents=
 <wiki:toc max_depth="2" />

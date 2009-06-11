@@ -173,8 +173,8 @@ manage objects of that class.
 LuaMethod should be applied to all methods that you want available in Lua.
 There are two available options to set.
 
-`global` decides if the method should be exposed as a method or a global function. It's optional, and defaults to false, i.e. a method.
-`alias` sets the name to be used in Lua. It's optional and default is the same as the method name in Java.
+ * `global` decides if the method should be exposed as a method or a global function. It's optional, and defaults to false, i.e. a method.
+ * `alias` sets the name to be used in Lua. It's optional and default is the same as the method name in Java.
 
 ====LuaConstructor====
 LuaConstructor should be applied to all constructors that you want available in Lua.

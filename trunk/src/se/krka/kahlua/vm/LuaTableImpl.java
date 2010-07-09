@@ -385,7 +385,7 @@ public final class LuaTableImpl implements LuaTable {
 	}
 
 	public final int len() {
-		int high = keys.length;
+		int high = 2 * keys.length;
 		int low = 0;
 		while (low < high) {
 			int middle = (high + low + 1) >> 1;
@@ -395,6 +395,9 @@ public final class LuaTableImpl implements LuaTable {
 			} else {
 				low = middle;
 			}
+		}
+		while (rawget(low + 1) != null) {
+			low++;
 		}
 		return low;
 	}

@@ -24,8 +24,12 @@ public class RequireTest extends TestCase {
         LuaClosure luaClosure = LuaCompiler.loadstring("require('/a')", "foo", state.getEnvironment());
         Object[] objects = state.pcall(luaClosure);
         assertEquals(Boolean.TRUE, objects[0]);
-        String outputString = new String(byteArrayOutputStream.toByteArray());
+        String outputString = setNewlines(new String(byteArrayOutputStream.toByteArray()));
         assertEquals("Great success\n", outputString);
+    }
+
+    private String setNewlines(String s) {
+        return s.replace("\r\n", "\n");
     }
 
     public void testSourceNotFound() throws IOException {
@@ -62,7 +66,7 @@ public class RequireTest extends TestCase {
         LuaClosure luaClosure = LuaCompiler.loadstring("require('/a')", "foo", state.getEnvironment());
         Object[] objects = state.pcall(luaClosure);
         assertEquals(Boolean.TRUE, objects[0]);
-        String outputString = new String(byteArrayOutputStream.toByteArray());
+        String outputString = setNewlines(new String(byteArrayOutputStream.toByteArray()));
         assertEquals("Great success\n", outputString);
     }
 

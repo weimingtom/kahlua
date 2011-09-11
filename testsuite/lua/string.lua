@@ -373,3 +373,11 @@ function concattest4(...)
 end
 concattest4("hello")
 
+local ok, err = pcall(function() return ("cxxMMMCDLVI"):gsub("%l+","(%1)") end)
+testAssertEqual(ok, false)
+if ok == false then
+	testAssert("", err ~= nil)
+	local found = err:find("invalid capture index", 1, 1) ~= nil
+	testAssert("", found, "got " .. err)
+end
+
